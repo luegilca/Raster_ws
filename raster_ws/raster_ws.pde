@@ -22,7 +22,7 @@ String renderer = P3D;
 
 void setup() {
   //use 2^n to change the dimensions
-  size(1024, 1024, renderer);
+  size(512, 512, renderer);
   scene = new Scene(this);
   if (scene.is3D())
     scene.setType(Scene.Type.ORTHOGRAPHIC);
@@ -57,7 +57,7 @@ void draw() {
   background(0);
   stroke(0, 255, 0);
   if (gridHint)
-    scene.drawGrid(scene.radius(), (int)pow( 2, n));
+    scene.drawGrid(scene.radius(), (int)pow(2, n));
   if (triangleHint)
     drawTriangleHint();
   pushMatrix();
@@ -73,12 +73,55 @@ void draw() {
 void triangleRaster() {
   // frame.coordinatesOf converts from world to frame
   // here we convert v1 to illustrate the idea
-  if (debug) {
-    pushStyle();
-    stroke(255, 255, 0, 125);
-    point(round(frame.coordinatesOf(v1).x()), round(frame.coordinatesOf(v1).y()));
-    popStyle();
+  int halfSize = (int) pow( 2, n ) / 2;
+  if( isWindedClockWise( v1, v2, v3 ) ) {
+    swapVectors( );
+  } 
+  for( int x = -halfSize; x <= halfSize; x++ ) {
+    for(  int y = -halfSize; y <= halfSize; y++ ) {
+      boolean isInside = true;
+      float centerX = x + 0.5;
+      float centerY = y + 0.5;
+      isInside &= edgeFunction( centerX, centerY, frame.coordinatesOf(v1).x(), frame.coordinatesOf(v1).y(), frame.coordinatesOf(v2).x(), frame.coordinatesOf(v2).y() ); 
+      isInside &= edgeFunction( centerX, centerY, frame.coordinatesOf(v2).x(), frame.coordinatesOf(v2).y(), frame.coordinatesOf(v3).x(), frame.coordinatesOf(v3).y() );
+      isInside &= edgeFunction( centerX, centerY, frame.coordinatesOf(v3).x(), frame.coordinatesOf(v3).y(), frame.coordinatesOf(v1).x(), frame.coordinatesOf(v1).y() );
+      if( isInside ) {
+        pushStyle();
+        noStroke();
+        fill( color( 0, 192, 230 ) );
+        rect( x, y, 1, 1 );
+        popStyle();
+      }
+      if(debug ) {
+        drawCenters( centerX, centerY );
+      }
+    }
   }
+}
+
+
+void drawCenters( float x, float y ){
+  pushStyle();
+  stroke( color( 255, 255, 0 ) );
+  strokeWeight( 0.1 );
+  point( x , y );
+  popStyle();
+}
+
+boolean isWindedClockWise( Vector v0, Vector v1, Vector v2 ) {
+  Vector result = new Vector(); 
+  Vector.cross( Vector.subtract( v1, v0 ), Vector.subtract( v2, v0 ), result );
+  return result.z( ) > 0;
+}
+
+void swapVectors( ) {
+  Vector tmp = v1;
+  v1 = v2;
+  v2 = tmp;
+}
+
+boolean edgeFunction( float px, float py, float v0x, float v0y, float v1x, float v1y ) {
+  return ( ( px - v0x ) * ( v1y - v0y ) - ( py - v0y ) * ( v1x - v0x ) ) >= 0.0 ;
 }
 
 void randomizeTriangle() {

@@ -22,11 +22,23 @@ Complete la tabla:
 
 | Integrante | github nick |
 |------------|-------------|
-|            |             |
+|Luis Ernesto Gil Castellanos|luegilca|
+|Juan Sebastián Martínez Beltrán|juasmartinezbel|
 
 ## Discusión
 
 Describa los resultados obtenidos. Qué técnicas de anti-aliasing y shading se exploraron? Adjunte las referencias. Discuta las dificultades encontradas.
+### Referencias:
+Se implementó un algoritmo de Multisampling anti-aliasing (MSAA) de [malla fija](https://en.wikipedia.org/wiki/Multisample_anti-aliasing#Regular_grid), donde se puede aumentar el muestreo a 2x, 4x, 8x, 16x, y para efectos de este ejercicio de rasterización de una sola primitiva, hasta 32x por pixel.
+
+En el shading, se utilizó una técnica donde se añadió a los vértices un atributo: el color, cada vértice en orden contrario a las manecillas del reloj se le otorgó el color rojo, verde y azul respectivamente. Gracias a las coordenadas baricéntricas y a estos atributos de color, se sombrea con la interpolación de los tres colores sobre la superficie de la primitiva.
+
+Una de las dificultades encontradas fue lograr implementar el algoritmo de antialiasing, pues particularmente se intentó uno que no fuera MSAA, como un SuperSampling aleatorio, sin embargo, los resultados a cualquier escala no fueron tan satisfactorios, como los del muestreo múltiple.
+
+### Referencias
+
+[The barycentric conspiracy](https://fgiesen.wordpress.com/2013/02/06/the-barycentric-conspirac/)
+[The rasterization stage](https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage)
 
 ## Entrega
 
